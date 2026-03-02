@@ -20,7 +20,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-scripts
 
-FROM php:8.2-cli-alpine
+FROM php:8.4-cli-alpine
 WORKDIR /app/backend
 
 RUN apk add --no-cache \
