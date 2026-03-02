@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+vendor/
+.env
+
+# Jitsi runtime files
+jitsi/data/
+*.sock
+
+# OS
+.DS_Store
+Thumbs.db

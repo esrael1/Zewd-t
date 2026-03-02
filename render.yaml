@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: zewd
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: ZEWD
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: zewd-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: zewd-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: zewd-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: zewd-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: zewd-db
+          property: password
+      - key: DB_SSLMODE
+        value: require
+      - key: CACHE_STORE
+        value: database
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: JITSI_APP_ID
+        sync: false
+      - key: JITSI_JWT_SECRET
+        sync: false
+
+databases:
+  - name: zewd-db
+    plan: free
