@@ -13,7 +13,12 @@ FROM composer:2 AS composer-build
 WORKDIR /app/backend
 
 COPY backend/composer.json backend/composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --no-interaction \
+    --optimize-autoloader \
+    --no-scripts
 
 FROM php:8.2-cli-alpine
 WORKDIR /app/backend
@@ -35,5 +40,6 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 
 ENV APP_ENV=production
 ENV APP_DEBUG=false
+EXPOSE 10000
 
-CMD sh -lc "php artisan config:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+CMD sh -lc "php artisan package:discover --ansi && (php artisan storage:link || true) && php artisan config:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"

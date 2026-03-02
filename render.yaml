@@ -2,8 +2,11 @@ services:
   - type: web
     name: zewd
     runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     plan: free
     autoDeploy: true
+    healthCheckPath: /
     envVars:
       - key: APP_NAME
         value: ZEWD
@@ -14,9 +17,11 @@ services:
       - key: APP_URL
         sync: false
       - key: APP_KEY
-        generateValue: true
-      - key: FRONTEND_URL
         sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -42,11 +47,11 @@ services:
       - key: DB_SSLMODE
         value: require
       - key: CACHE_STORE
-        value: database
+        value: file
       - key: SESSION_DRIVER
-        value: database
+        value: file
       - key: QUEUE_CONNECTION
-        value: database
+        value: sync
       - key: JITSI_APP_ID
         sync: false
       - key: JITSI_JWT_SECRET
