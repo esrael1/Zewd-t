@@ -16,11 +16,15 @@ class JitsiTokenService
     {
         $appId = env('JITSI_APP_ID', 'zewd_app');
         $secret = env('JITSI_JWT_SECRET', 'zewd_jitsi_secret_key');
+        $kid = env('JITSI_KID');
+        $iss = env('JITSI_ISS', $appId);
+        $aud = env('JITSI_AUD', $appId);
+        $sub = env('JITSI_SUB', $appId);
 
         $payload = [
-            'iss' => $appId,
-            'aud' => $appId,
-            'sub' => $appId,
+            'iss' => $iss,
+            'aud' => $aud,
+            'sub' => $sub,
             'iat' => time(),
             'exp' => time() + 3600, // Token valid for 1 hour
             'room' => $roomName,
@@ -38,12 +42,20 @@ class JitsiTokenService
             ]
         ];
 
-        return self::encodeHs256($payload, $secret);
+        if (!empty($kid)) {
+            // Some Jitsi providers require "kid" on header (and occasionally payload).
+            $payload['kid'] = $kid;
+        }
+
+        return self::encodeHs256($payload, $secret, $kid);
     }
 
-    private static function encodeHs256(array $payload, string $secret): string
+    private static function encodeHs256(array $payload, string $secret, ?string $kid = null): string
     {
         $header = ['typ' => 'JWT', 'alg' => 'HS256'];
+        if (!empty($kid)) {
+            $header['kid'] = $kid;
+        }
 
         $headerEncoded = self::base64UrlEncode(json_encode($header, JSON_UNESCAPED_SLASHES));
         $payloadEncoded = self::base64UrlEncode(json_encode($payload, JSON_UNESCAPED_SLASHES));

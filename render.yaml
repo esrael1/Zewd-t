@@ -54,6 +54,14 @@ services:
         value: sync
       - key: JITSI_APP_ID
         sync: false
+      - key: JITSI_KID
+        sync: false
+      - key: JITSI_ISS
+        sync: false
+      - key: JITSI_AUD
+        sync: false
+      - key: JITSI_SUB
+        sync: false
       - key: JITSI_JWT_SECRET
         sync: false
 
