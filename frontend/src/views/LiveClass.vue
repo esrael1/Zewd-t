@@ -20,6 +20,7 @@ const authStore = useAuthStore();
 let api = null;
 const jitsiToken = ref('');
 const resolvedRole = ref('');
+const useJwt = import.meta.env.VITE_JITSI_USE_JWT === 'true';
 
 const fetchToken = async () => {
     try {
@@ -49,13 +50,17 @@ const fetchToken = async () => {
 };
 
 onMounted(async () => {
-    const ok = await fetchToken();
-    if (!ok || !jitsiToken.value) {
-        alert('Unable to join this live class. Please re-open from your dashboard.');
-        const role = authStore.role || authStore.user?.role;
-        const redirectPath = role === 'teacher' ? '/teacher' : '/student';
-        router.push(redirectPath);
-        return;
+    if (useJwt) {
+        const ok = await fetchToken();
+        if (!ok || !jitsiToken.value) {
+            alert('Unable to join this live class. Please re-open from your dashboard.');
+            const role = authStore.role || authStore.user?.role;
+            const redirectPath = role === 'teacher' ? '/teacher' : '/student';
+            router.push(redirectPath);
+            return;
+        }
+    } else {
+        resolvedRole.value = authStore.role || authStore.user?.role || localStorage.getItem('role') || 'student';
     }
     
     // Load Jitsi script from configured instance
@@ -76,7 +81,6 @@ const initJitsi = () => {
         width: '100%',
         height: '100%',
         parentNode: document.querySelector('#jitsi-container'),
-        jwt: jitsiToken.value, // Pass the JWT token here
         configOverwrite: {
             startWithAudioMuted: true,
             startWithVideoMuted: true
@@ -92,6 +96,9 @@ const initJitsi = () => {
             ],
         },
     };
+    if (useJwt && jitsiToken.value) {
+        options.jwt = jitsiToken.value;
+    }
     api = new window.JitsiMeetExternalAPI(domain, options);
 
     // Add listeners for meeting end
