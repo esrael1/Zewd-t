@@ -13,31 +13,34 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@zewd.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'status' => 'active',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@zewd.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'status' => 'active',
+            ]
+        );
 
-        // Teacher
-        User::create([
-            'name' => 'John Doe',
-            'email' => 'teacher@zewd.com',
-            'password' => Hash::make('password'),
-            'role' => 'teacher',
-            'status' => 'active',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'teacher@zewd.com'],
+            [
+                'name' => 'John Doe',
+                'password' => Hash::make('password'),
+                'role' => 'teacher',
+                'status' => 'active',
+            ]
+        );
 
-        // Student
-        User::create([
-            'name' => 'Jane Smith',
-            'email' => 'student@zewd.com',
-            'password' => Hash::make('password'),
-            'role' => 'student',
-            'status' => 'active',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'student@zewd.com'],
+            [
+                'name' => 'Jane Smith',
+                'password' => Hash::make('password'),
+                'role' => 'student',
+                'status' => 'active',
+            ]
+        );
     }
 }
