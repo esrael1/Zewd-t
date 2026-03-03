@@ -57,7 +57,7 @@
                         Restart
                     </button>
                     
-                    <router-link v-if="cls.status === 'live'" :to="'/live-class/' + cls.meeting_id" target="_blank"
+                    <router-link v-if="cls.status === 'live'" :to="'/live-class/' + cls.meeting_id"
                         class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl hover:bg-indigo-100 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </router-link>

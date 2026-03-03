@@ -291,7 +291,7 @@ const startClass = async (meetingId) => {
     try {
         await apiClient.post(`/teacher/live-classes/${meetingId}/start`);
         loadDashboard();
-        window.open(`/live-class/${meetingId}`, '_blank');
+        router.push(`/live-class/${meetingId}`);
     } catch (err) {
         alert('Failed to start class');
     }

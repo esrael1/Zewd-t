@@ -2,7 +2,7 @@
     <div class="h-screen flex flex-col">
         <nav class="bg-gray-900 text-white px-6 py-3 flex justify-between items-center">
             <h1 class="font-bold">Live Class</h1>
-            <button @click="$router.go(-1)" class="bg-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-600">Exit Class</button>
+            <button @click="leaveClass" class="bg-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-600">Exit Class</button>
         </nav>
         <div id="jitsi-container" class="flex-1 bg-black"></div>
     </div>
@@ -21,6 +21,9 @@ let api = null;
 const jitsiToken = ref('');
 const resolvedRole = ref('');
 const useJwt = import.meta.env.VITE_JITSI_USE_JWT === 'true';
+const meetingId = String(route.params.meetingId);
+const isEndingClass = ref(false);
+let studentStatusInterval = null;
 
 const fetchToken = async () => {
     try {
@@ -62,6 +65,7 @@ onMounted(async () => {
     } else {
         resolvedRole.value = authStore.role || authStore.user?.role || localStorage.getItem('role') || 'student';
     }
+    startStudentStatusPolling();
     
     // Load Jitsi script from configured instance
     const jitsiUrl = import.meta.env.VITE_JITSI_URL || 'https://meet.jit.si';
@@ -101,26 +105,98 @@ const initJitsi = () => {
     }
     api = new window.JitsiMeetExternalAPI(domain, options);
 
-    // Add listeners for meeting end
+    // Add listeners for meeting end.
     api.addEventListeners({
         videoConferenceTerminated: handleMeetingEnd,
         readyToClose: handleMeetingEnd
     });
 };
 
-const handleMeetingEnd = () => {
+const markClassEndedIfTeacher = async () => {
+    const role = resolvedRole.value || authStore.role || authStore.user?.role || localStorage.getItem('role');
+    if (role !== 'teacher' || isEndingClass.value) return;
+    isEndingClass.value = true;
+    try {
+        await apiClient.post(`/teacher/live-classes/${meetingId}/end`);
+    } catch (err) {
+        console.error('Failed to mark class ended', err);
+    } finally {
+        isEndingClass.value = false;
+    }
+};
+
+const checkStudentClassStatus = async () => {
+    const role = resolvedRole.value || authStore.role || authStore.user?.role || localStorage.getItem('role');
+    if (role !== 'student') return;
+
+    try {
+        const res = await apiClient.get('/student/live-classes');
+        const current = Array.isArray(res.data)
+            ? res.data.find((cls) => cls.meeting_id === meetingId)
+            : null;
+
+        if (!current || current.status === 'ended') {
+            if (api) {
+                api.dispose();
+                api = null;
+            }
+            stopStudentStatusPolling();
+            alert('Class has ended. Returning to dashboard.');
+            router.push('/student');
+        }
+    } catch (err) {
+        console.error('Failed to refresh class status', err);
+    }
+};
+
+const startStudentStatusPolling = () => {
+    const role = resolvedRole.value || authStore.role || authStore.user?.role || localStorage.getItem('role');
+    if (role !== 'student') return;
+    if (studentStatusInterval) clearInterval(studentStatusInterval);
+    studentStatusInterval = setInterval(checkStudentClassStatus, 10000);
+};
+
+const stopStudentStatusPolling = () => {
+    if (studentStatusInterval) {
+        clearInterval(studentStatusInterval);
+        studentStatusInterval = null;
+    }
+};
+
+const handleMeetingEnd = async () => {
+    await markClassEndedIfTeacher();
+
     const role = resolvedRole.value || authStore.role || authStore.user?.role || 'student';
     const redirectPath = role === 'teacher' ? '/teacher' : '/student';
-    
-    // Dispose the API and redirect
+
+    // Dispose the API and redirect.
     if (api) {
         api.dispose();
         api = null;
     }
+    stopStudentStatusPolling();
     router.push(redirectPath);
 };
 
+const leaveClass = async () => {
+    await markClassEndedIfTeacher();
+
+    if (api) {
+        try {
+            api.executeCommand('hangup');
+        } catch (err) {
+            console.error('Failed to hang up cleanly', err);
+            api.dispose();
+            api = null;
+            handleMeetingEnd();
+        }
+    } else {
+        handleMeetingEnd();
+    }
+};
+
 onBeforeUnmount(() => {
+    stopStudentStatusPolling();
     if (api) {
         api.dispose();
     }
