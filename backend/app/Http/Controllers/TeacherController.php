@@ -13,6 +13,7 @@ use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Services\JitsiTokenService;
 
 class TeacherController extends Controller
@@ -220,7 +221,9 @@ class TeacherController extends Controller
 
         $teacher = $this->getTeacher($request);
         
-        $meetingId = 'zewd-' . uniqid();
+        do {
+            $meetingId = 'zewd-' . Str::lower(Str::random(12));
+        } while (LiveClass::where('meeting_id', $meetingId)->exists());
 
         $liveClass = LiveClass::create([
             'teacher_id' => $teacher->id,
