@@ -75,18 +75,29 @@ class StudentController extends Controller
     {
         $student = $this->getStudent($request);
         
-        if (!$student->grade_id) {
+        if (!$student->grade_id || !$student->teacher_id) {
              return response()->json([]);
         }
 
         return response()->json(LiveClass::where('grade_id', $student->grade_id)
-            ->whereIn('status', ['live', 'scheduled'])
-            ->orderBy('start_time', 'asc')
+            ->where('teacher_id', $student->teacher_id)
+            ->orderBy('start_time', 'desc')
             ->get());
     }
 
-    public function getClassToken($meetingId)
+    public function getClassToken(Request $request, $meetingId)
     {
+        $student = $this->getStudent($request);
+
+        $liveClass = LiveClass::where('meeting_id', $meetingId)
+            ->where('grade_id', $student->grade_id)
+            ->where('teacher_id', $student->teacher_id)
+            ->firstOrFail();
+
+        if ($liveClass->status !== 'live') {
+            return response()->json(['message' => 'Wait for teacher to start this class.'], 403);
+        }
+
         return response()->json([
             'token' => JitsiTokenService::generateToken(auth()->user()->name, $meetingId, false)
         ]);

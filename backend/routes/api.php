@@ -60,6 +60,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
              Route::get('/live-classes', [\App\Http\Controllers\TeacherController::class, 'getLiveClasses']);
              Route::post('/live-classes', [\App\Http\Controllers\TeacherController::class, 'createLiveClass']);
+             Route::put('/live-classes/{meetingId}', [\App\Http\Controllers\TeacherController::class, 'updateLiveClass']);
+             Route::delete('/live-classes/{meetingId}', [\App\Http\Controllers\TeacherController::class, 'deleteLiveClass']);
              Route::post('/live-classes/{meetingId}/start', [\App\Http\Controllers\TeacherController::class, 'startClass']);
              Route::post('/live-classes/{meetingId}/end', [\App\Http\Controllers\TeacherController::class, 'endClass']);
              Route::get('/live-classes/{meetingId}/token', [\App\Http\Controllers\TeacherController::class, 'getClassToken']);

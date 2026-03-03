@@ -238,6 +238,42 @@ class TeacherController extends Controller
         return response()->json($liveClass, 201);
     }
 
+    public function updateLiveClass(Request $request, $meetingId)
+    {
+        $request->validate([
+            'grade_id' => 'required|exists:grades,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'title' => 'required|string',
+            'start_time' => 'required|date',
+        ]);
+
+        $teacher = $this->getTeacher($request);
+        $liveClass = LiveClass::where('meeting_id', $meetingId)
+            ->where('teacher_id', $teacher->id)
+            ->firstOrFail();
+
+        $liveClass->update([
+            'grade_id' => $request->grade_id,
+            'subject_id' => $request->subject_id,
+            'title' => $request->title,
+            'start_time' => $request->start_time,
+        ]);
+
+        return response()->json(['message' => 'Class updated successfully', 'class' => $liveClass]);
+    }
+
+    public function deleteLiveClass(Request $request, $meetingId)
+    {
+        $teacher = $this->getTeacher($request);
+        $liveClass = LiveClass::where('meeting_id', $meetingId)
+            ->where('teacher_id', $teacher->id)
+            ->firstOrFail();
+
+        $liveClass->delete();
+
+        return response()->json(['message' => 'Class deleted successfully']);
+    }
+
     public function startClass($meetingId)
     {
         $teacher = $this->getTeacher(request());

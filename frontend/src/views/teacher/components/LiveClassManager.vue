@@ -44,6 +44,14 @@
                 </div>
 
                 <div class="flex items-center space-x-3 shrink-0">
+                    <button @click="$emit('edit', cls)"
+                        class="px-4 py-3 bg-slate-100 text-slate-700 rounded-2xl font-black hover:bg-slate-200 transition-colors">
+                        Edit
+                    </button>
+                    <button @click="$emit('delete', cls.meeting_id)"
+                        class="px-4 py-3 bg-rose-100 text-rose-700 rounded-2xl font-black hover:bg-rose-200 transition-colors">
+                        Delete
+                    </button>
                     <button v-if="cls.status === 'scheduled'" @click="$emit('start', cls.meeting_id)" 
                         class="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-600/20 hover:scale-105 transition-transform flex items-center">
                         Launch Class
@@ -126,7 +134,7 @@ const props = defineProps({
     subjects: Array
 });
 
-const emit = defineEmits(['create', 'start', 'end']);
+const emit = defineEmits(['create', 'start', 'end', 'edit', 'delete']);
 
 const showScheduleModal = ref(false);
 const newClass = ref({ title: '', grade_id: '', subject_id: '', start_time: '' });

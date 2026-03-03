@@ -52,7 +52,33 @@ const fetchToken = async () => {
     }
 };
 
+const ensureStudentCanJoin = async () => {
+    const role = resolvedRole.value || authStore.role || authStore.user?.role || localStorage.getItem('role');
+    if (role !== 'student') return true;
+
+    try {
+        const res = await apiClient.get('/student/live-classes');
+        const current = Array.isArray(res.data)
+            ? res.data.find((cls) => cls.meeting_id === meetingId)
+            : null;
+
+        if (!current || current.status !== 'live') {
+            alert('Wait for teacher to start this class.');
+            router.push('/student');
+            return false;
+        }
+        return true;
+    } catch (err) {
+        console.error('Failed to validate class status', err);
+        alert('Unable to join this class right now.');
+        router.push('/student');
+        return false;
+    }
+};
+
 onMounted(async () => {
+    resolvedRole.value = authStore.role || authStore.user?.role || localStorage.getItem('role') || 'student';
+
     if (useJwt) {
         const ok = await fetchToken();
         if (!ok || !jitsiToken.value) {
@@ -62,9 +88,10 @@ onMounted(async () => {
             router.push(redirectPath);
             return;
         }
-    } else {
-        resolvedRole.value = authStore.role || authStore.user?.role || localStorage.getItem('role') || 'student';
     }
+
+    const canJoin = await ensureStudentCanJoin();
+    if (!canJoin) return;
     startStudentStatusPolling();
     
     // Load Jitsi script from configured instance

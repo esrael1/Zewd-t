@@ -64,6 +64,8 @@
                         @create="createLiveClass"
                         @start="startClass"
                         @end="endClass"
+                        @edit="editLiveClass"
+                        @delete="deleteLiveClass"
                     />
 
                     <Settings v-else-if="currentTab === 'Settings'" 
@@ -284,6 +286,30 @@ const deleteMaterial = async (id) => {
 
 const createLiveClass = async (data) => {
     await apiClient.post('/teacher/live-classes', data);
+    loadDashboard();
+};
+
+const editLiveClass = async (cls) => {
+    const title = prompt('Class title', cls.title);
+    if (!title) return;
+
+    const startValue = new Date(cls.start_time);
+    const formatted = `${startValue.getFullYear()}-${String(startValue.getMonth() + 1).padStart(2, '0')}-${String(startValue.getDate()).padStart(2, '0')}T${String(startValue.getHours()).padStart(2, '0')}:${String(startValue.getMinutes()).padStart(2, '0')}`;
+    const start_time = prompt('Start time (YYYY-MM-DDTHH:mm)', formatted);
+    if (!start_time) return;
+
+    await apiClient.put(`/teacher/live-classes/${cls.meeting_id}`, {
+        title,
+        start_time,
+        grade_id: cls.grade_id,
+        subject_id: cls.subject_id,
+    });
+    loadDashboard();
+};
+
+const deleteLiveClass = async (meetingId) => {
+    if (!confirm('Delete this class?')) return;
+    await apiClient.delete(`/teacher/live-classes/${meetingId}`);
     loadDashboard();
 };
 
