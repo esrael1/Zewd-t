@@ -79,3 +79,7 @@ Unless you intentionally create and migrate DB-backed session/cache tables.
 ### E) Build fails during composer scripts
 Current Dockerfile installs PHP deps with `--no-scripts` and runs artisan during startup.
 If this behavior is changed, ensure app files exist before artisan script hooks run.
+
+
+
+ <!-- php artisan db:seed --class=UserSeeder --force && -->
