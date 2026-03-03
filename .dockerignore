@@ -4,6 +4,7 @@
 **/vendor
 **/.env
 **/.env.*
+!frontend/.env.production
 backend/storage/logs/*
 backend/storage/framework/cache/*
 backend/storage/framework/sessions/*
