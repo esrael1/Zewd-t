@@ -45,6 +45,11 @@
                         :students="students" 
                     />
 
+                    <DatabaseExplorer v-else-if="currentTab === 'Database'"
+                        :database-data="databaseData"
+                        @refresh="loadDashboardData"
+                    />
+
                     <PlanArchitect v-else-if="currentTab === 'Plans'" 
                         :plans="plans" 
                         @save="handlePlanSave"
@@ -74,6 +79,7 @@ import TeacherApprovalHub from './components/TeacherApprovalHub.vue';
 import SubscriptionVault from './components/SubscriptionVault.vue';
 import PlanArchitect from './components/PlanArchitect.vue';
 import UniversalStudentDirectory from './components/UniversalStudentDirectory.vue';
+import DatabaseExplorer from './components/DatabaseExplorer.vue';
 import Settings from './components/Settings.vue';
 
 const authStore = useAuthStore();
@@ -86,14 +92,16 @@ const teachers = ref([]);
 const subscriptions = ref([]);
 const students = ref([]);
 const plans = ref([]);
+const databaseData = ref({ counts: {}, tables: {} });
 
 const loadDashboardData = async () => {
-    const [statsRes, teachersRes, subsRes, studentsRes, plansRes] = await Promise.allSettled([
+    const [statsRes, teachersRes, subsRes, studentsRes, plansRes, dbRes] = await Promise.allSettled([
         apiClient.get('/admin/dashboard'),
         apiClient.get('/admin/teachers'),
         apiClient.get('/admin/subscriptions'),
         apiClient.get('/admin/students'),
-        apiClient.get('/admin/plans')
+        apiClient.get('/admin/plans'),
+        apiClient.get('/admin/database-data')
     ]);
 
     if (statsRes.status === 'fulfilled') stats.value = statsRes.value.data;
@@ -110,6 +118,9 @@ const loadDashboardData = async () => {
 
     if (plansRes.status === 'fulfilled') plans.value = plansRes.value.data;
     else console.error('Failed to load plans', plansRes.reason);
+
+    if (dbRes.status === 'fulfilled') databaseData.value = dbRes.value.data;
+    else console.error('Failed to load database data', dbRes.reason);
 };
 
 const approveTeacher = async (id) => {

@@ -19,6 +19,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
         Route::get('/teachers', [\App\Http\Controllers\AdminController::class, 'getTeachers']);
         Route::get('/students', [\App\Http\Controllers\AdminController::class, 'getStudents']);
+        Route::get('/database-data', [\App\Http\Controllers\AdminController::class, 'getDatabaseData']);
         Route::post('/teachers/{id}/approve', [\App\Http\Controllers\AdminController::class, 'approveTeacher']);
         Route::post('/teachers/{id}/reject', [\App\Http\Controllers\AdminController::class, 'rejectTeacher']);
 

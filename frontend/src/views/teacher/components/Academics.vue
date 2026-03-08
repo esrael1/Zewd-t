@@ -2,17 +2,21 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <!-- Grades Section -->
         <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-            <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <div class="p-5 sm:p-8 border-b border-slate-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-slate-50/50">
                 <div>
                     <h3 class="text-2xl font-black text-slate-900 leading-none">Your Grades</h3>
                     <p class="text-slate-400 text-sm font-bold mt-2 uppercase tracking-widest">Levels of education</p>
                 </div>
-                <div class="flex gap-2">
-                    <input v-model="newGrade" placeholder="New Grade Name" class="px-4 py-2 bg-white border-none rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold shadow-sm">
-                    <button @click="handleAddGrade" class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-600/20 hover:scale-105 transition-transform">
+                <form @submit.prevent="handleAddGrade" class="flex w-full sm:w-auto items-center gap-2">
+                    <input
+                        v-model="newGrade"
+                        placeholder="New Grade Name"
+                        class="flex-1 sm:flex-none sm:w-56 min-w-0 px-4 py-3 bg-white border-none rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold shadow-sm"
+                    >
+                    <button type="submit" class="bg-indigo-600 text-white px-3 py-3 rounded-xl shadow-lg shadow-indigo-600/20 hover:scale-105 transition-transform shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </button>
-                </div>
+                </form>
             </div>
             <div class="flex-1 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -22,7 +26,7 @@
                                 class="w-full bg-white border-2 border-indigo-100 rounded-lg px-2 py-1 font-black text-slate-700 outline-none">
                             <span v-else class="font-black text-slate-700 tracking-tight">{{ grade.name }}</span>
                         </div>
-                        <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="flex items-center space-x-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button v-if="editingGradeId === grade.id" @click="saveGradeEdit(grade.id)" class="text-emerald-500 hover:scale-110 transition-transform p-1">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </button>

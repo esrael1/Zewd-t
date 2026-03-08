@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Teacher;
 use App\Models\Plan;
 use App\Models\User;
+use App\Models\Grade;
+use App\Models\LiveClass;
+use App\Models\Material;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -23,7 +29,32 @@ class AdminController extends Controller
 
     public function getStudents()
     {
-        return response()->json(\App\Models\Student::with(['user', 'teacher.user', 'grade'])->get());
+        return response()->json(Student::with(['user', 'teacher.user', 'grade'])->get());
+    }
+
+    public function getDatabaseData()
+    {
+        $tables = [
+            'users' => User::orderBy('id')->get(),
+            'teachers' => Teacher::with('user')->orderBy('id')->get(),
+            'students' => Student::with(['user', 'teacher.user', 'grade'])->orderBy('id')->get(),
+            'plans' => Plan::orderBy('id')->get(),
+            'subscriptions' => Subscription::with(['plan', 'teacher.user'])->orderBy('id')->get(),
+            'grades' => Grade::orderBy('id')->get(),
+            'subjects' => Subject::with(['teacher.user', 'grade'])->orderBy('id')->get(),
+            'materials' => Material::with('subject')->orderBy('id')->get(),
+            'live_classes' => LiveClass::with(['subject', 'grade'])->orderBy('id')->get(),
+        ];
+
+        $counts = [];
+        foreach ($tables as $name => $rows) {
+            $counts[$name] = $rows->count();
+        }
+
+        return response()->json([
+            'counts' => $counts,
+            'tables' => $tables,
+        ]);
     }
 
     // --- Teacher Management ---
