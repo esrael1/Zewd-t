@@ -8,10 +8,7 @@
     ]">
         <div class="p-6 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <span class="text-white font-bold text-xl uppercase italic">Z</span>
-                </div>
-                <span class="text-white font-bold text-xl tracking-tight">ZEWD</span>
+                <img :src="logoUrl" alt="Zewd" class="w-14 h-14 rounded-xl bg-white p-1.5 shadow-lg shadow-indigo-500/20 object-contain" />
             </div>
             <!-- Mobile Close Button -->
             <button @click="$emit('close')" class="lg:hidden p-2 text-slate-400 hover:text-white">
@@ -52,6 +49,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import logoUrl from '../../../assets/Zewd.png';
 
 const props = defineProps({
     activeTab: String,

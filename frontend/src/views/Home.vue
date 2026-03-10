@@ -4,8 +4,7 @@
         <nav class="fixed top-0 left-0 right-0 z-[100] bg-white/70 backdrop-blur-xl border-b border-slate-100">
             <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 <div class="flex items-center space-x-2 group cursor-pointer">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black italic shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">Z</div>
-                    <span class="text-2xl font-black text-slate-900 tracking-tighter uppercase">Zewd</span>
+                    <img :src="logoUrl" alt="Zewd" class="w-55 h-25 rounded-b-full bg-white p-2 shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform object-contain" />
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#features" class="text-slate-500 hover:text-indigo-600 font-bold transition-colors">Features</a>
@@ -13,9 +12,17 @@
                     <router-link to="/register" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-black shadow-xl shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all">Get Started</router-link>
                 </div>
                 <!-- Mobile Menu Button (Basic) -->
-                <button class="md:hidden p-2 text-slate-600">
+                <button class="md:hidden p-2 text-slate-600" @click="isMobileMenuOpen = !isMobileMenuOpen" aria-label="Toggle menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div v-if="isMobileMenuOpen" class="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl">
+                <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3">
+                    <a href="#features" class="text-slate-700 font-bold" @click="isMobileMenuOpen = false">Features</a>
+                    <router-link to="/login" class="text-slate-900 font-black" @click="isMobileMenuOpen = false">Sign In</router-link>
+                    <router-link to="/register" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-center" @click="isMobileMenuOpen = false">Get Started</router-link>
+                </div>
             </div>
         </nav>
 
@@ -36,7 +43,7 @@
                     <router-link to="/register" class="w-full sm:w-auto bg-indigo-600 text-white px-10 py-5 rounded-[24px] font-black text-lg shadow-2xl shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-all">
                         Launch Your Academy
                     </router-link>
-                    <router-link to="/login" class="w-full sm:w-auto bg-white text-slate-900 border border-slate-200 px-10 py-5 rounded-[24px] font-black text-lg hover:bg-slate-50 transition-all">
+                    <router-link to="/login" class="w-full sm:w-auto bg-yellow-700 text-slate-900 border border-slate-200 px-10 py-5 rounded-[24px] font-black text-lg hover:bg-slate-50 transition-all">
                         Student Portal
                     </router-link>
                 </div>
@@ -77,12 +84,16 @@
 
         <!-- Footer -->
         <footer class="py-12 px-6 border-t border-slate-100 text-center">
-            <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">&copy; 2026 ZEWD Platform. Built for the Future.</p>
+            <p class="text-amber-700 font-bold text-sm uppercase tracking-widest ">Developed by Esrael Admasu</p>
         </footer>
     </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import logoUrl from '../assets/Zewd.png';
+const isMobileMenuOpen = ref(false);
+
 const features = [
     { 
         title: 'For Educators', 

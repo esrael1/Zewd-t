@@ -17,8 +17,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
             <div class="ml-4 flex items-center space-x-2">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold italic">Z</div>
-                <span class="font-bold text-slate-900 tracking-tight">ZEWD</span>
+                <img :src="logoUrl" alt="Zewd" class="w-12 h-12 rounded-lg bg-white p-1.5 shadow-sm object-contain" />
             </div>
         </header>
 
@@ -112,6 +111,7 @@ import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useRouter } from 'vue-router';
 import apiClient from '../../services/api';
+import logoUrl from '../../assets/Zewd.png';
 
 // Components
 import Sidebar from './components/Sidebar.vue';
