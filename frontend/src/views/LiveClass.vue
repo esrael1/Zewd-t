@@ -1,10 +1,19 @@
 <template>
     <div class="h-screen flex flex-col">
         <nav class="bg-gray-900 text-white px-6 py-3 flex justify-between items-center">
-            <h1 class="font-bold">Live Class</h1>
-            <button @click="leaveClass" class="bg-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-600">Exit Class</button>
+            <div class="flex items-center gap-3">
+                <h1 class="font-bold">Live Class</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <button @click="triggerScreenShare" class="bg-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-600">
+                    Share Screen
+                </button>
+                <button @click="leaveClass" class="bg-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-600">Exit Class</button>
+            </div>
         </nav>
-        <div id="jitsi-container" class="flex-1 bg-black"></div>
+        <div class="flex-1">
+            <div id="jitsi-container" class="h-full w-full bg-black"></div>
+        </div>
     </div>
 </template>
 
@@ -93,7 +102,7 @@ onMounted(async () => {
     const canJoin = await ensureStudentCanJoin();
     if (!canJoin) return;
     startStudentStatusPolling();
-    
+
     // Load Jitsi script from configured instance
     const jitsiUrl = import.meta.env.VITE_JITSI_URL || 'https://meet.jit.si';
     const script = document.createElement('script');
@@ -219,6 +228,15 @@ const leaveClass = async () => {
         }
     } else {
         handleMeetingEnd();
+    }
+};
+
+const triggerScreenShare = () => {
+    if (!api) return;
+    try {
+        api.executeCommand('toggleShareScreen');
+    } catch (err) {
+        console.error('Failed to trigger screen share', err);
     }
 };
 

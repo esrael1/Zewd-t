@@ -41,6 +41,7 @@
 
                     <LiveClassManager v-else-if="currentTab === 'Live Classes'" 
                         :live-classes="liveClasses" 
+                        @refresh="loadDashboard"
                     />
 
                     <Settings v-else-if="currentTab === 'Profile'" 
@@ -56,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useRouter } from 'vue-router';
 import apiClient from '../../services/api';
@@ -78,6 +79,7 @@ const studentProfile = ref({});
 const subjects = ref([]);
 const liveClasses = ref([]);
 const baseUrl = 'http://localhost:8000';
+let liveClassesInterval = null;
 
 const loadDashboard = async () => {
     try {
@@ -92,6 +94,31 @@ const loadDashboard = async () => {
         liveClasses.value = classesRes.data;
     } catch (e) {
         console.error(e);
+    }
+};
+
+const loadLiveClasses = async () => {
+    try {
+        const classesRes = await apiClient.get('/student/live-classes');
+        liveClasses.value = classesRes.data;
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+const startLiveClassesPolling = () => {
+    if (liveClassesInterval) return;
+    liveClassesInterval = setInterval(() => {
+        if (currentTab.value === 'Live Classes') {
+            loadLiveClasses();
+        }
+    }, 8000);
+};
+
+const stopLiveClassesPolling = () => {
+    if (liveClassesInterval) {
+        clearInterval(liveClassesInterval);
+        liveClassesInterval = null;
     }
 };
 
@@ -129,6 +156,17 @@ const handleLogout = async () => {
 
 onMounted(() => {
     loadDashboard();
+    startLiveClassesPolling();
+});
+
+watch(currentTab, (newTab) => {
+    if (newTab === 'Live Classes') {
+        loadLiveClasses();
+    }
+});
+
+onBeforeUnmount(() => {
+    stopLiveClassesPolling();
 });
 </script>
 

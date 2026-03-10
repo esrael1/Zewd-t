@@ -5,6 +5,9 @@
                 <h1 class="text-4xl font-black text-slate-900 tracking-tight">Virtual Room</h1>
                 <p class="text-slate-500 font-medium">Join your live interactive classes.</p>
             </div>
+            <button @click="emit('refresh')" class="bg-slate-900 text-white px-5 py-3 rounded-2xl font-black hover:bg-slate-800 transition-colors">
+                Refresh
+            </button>
         </header>
 
         <div v-if="liveClasses.length === 0" class="flex flex-col items-center justify-center py-20 bg-white rounded-[40px] border border-slate-100">
@@ -54,6 +57,8 @@
 </template>
 
 <script setup>
+const emit = defineEmits(['refresh']);
+
 const props = defineProps({
     liveClasses: Array
 });
